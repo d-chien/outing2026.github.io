@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>後台管理 — 劍橋教會野外禮拜</title>
+    <link rel="icon" href="Logo_Black_Fish.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; color: #374151; }
+        .input-base  { @apply w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400; }
+        .btn-primary { @apply px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-700 transition-colors; }
+        .btn-danger  { @apply px-3 py-1.5 bg-red-500 text-white rounded-lg text-xs font-semibold hover:bg-red-600 transition-colors; }
+        .btn-ghost   { @apply px-3 py-1.5 border border-gray-300 text-gray-600 rounded-lg text-xs font-semibold hover:bg-gray-100 transition-colors; }
+        .btn-green   { @apply px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-semibold hover:bg-green-700 transition-colors; }
+        .section-title { @apply text-lg font-bold text-indigo-700 mb-4 pb-2 border-b-2 border-indigo-100; }
+        .field-label { @apply block text-sm font-medium text-gray-600 mb-1; }
+        .row-card    { @apply bg-gray-50 border border-gray-200 rounded-lg p-3 mb-2; }
+        #toast { transition: opacity 0.3s; }
+    </style>
+</head>
+<body class="antialiased">
+
+<!-- ===== 登入畫面 ===== -->
+<div id="login-screen" class="min-h-screen flex items-center justify-center px-4">
+    <div class="bg-white rounded-2xl shadow-xl p-8 w-full max-w-sm">
+        <div class="flex justify-center mb-6">
+            <img src="Logo_Black_Fish.png" alt="Logo" class="h-16 w-auto">
+        </div>
+        <h1 class="text-xl font-bold text-center text-gray-800 mb-2">後台管理系統</h1>
+        <p class="text-sm text-center text-gray-500 mb-6">劍橋教會野外禮拜</p>
+        <div id="login-error" class="hidden bg-red-50 text-red-600 text-sm rounded-lg px-3 py-2 mb-4"></div>
+        <label class="field-label">電子郵件</label>
+        <input id="login-email" type="email" class="input-base mb-3" placeholder="admin@example.com">
+        <label class="field-label">密碼</label>
+        <input id="login-password" type="password" class="input-base mb-5" placeholder="••••••••"
+               onkeydown="if(event.key==='Enter') doLogin()">
+        <button onclick="doLogin()" class="btn-primary w-full py-2.5">登入</button>
+    </div>
+</div>
+
+<!-- ===== 後台主畫面（登入後顯示） ===== -->
+<div id="admin-screen" class="hidden min-h-screen flex flex-col">
+
+    <!-- 頂部導覽列 -->
+    <nav class="bg-white shadow-sm px-6 py-3 flex items-center justify-between sticky top-0 z-10">
+        <div class="flex items-center gap-3">
+            <img src="Logo_Black_Fish.png" alt="Logo" class="h-8 w-auto">
+            <span class="font-bold text-gray-700">後台管理</span>
+        </div>
+        <div class="flex items-center gap-3">
+            <span id="user-email" class="text-sm text-gray-500 hidden sm:block"></span>
+            <a href="index.html" target="_blank" class="btn-ghost text-xs">前往首頁 ↗</a>
+            <button onclick="doLogout()" class="btn-ghost text-xs">登出</button>
+        </div>
+    </nav>
+
+    <div class="flex flex-1 overflow-hidden">
+
+        <!-- 左側欄：活動列表 -->
+        <aside class="w-56 flex-shrink-0 bg-white border-r border-gray-200 flex flex-col">
+            <div class="p-4 border-b border-gray-100">
+                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">活動列表</p>
+                <button onclick="createNewEvent()" class="btn-primary w-full text-xs py-2">＋ 新建活動</button>
+            </div>
+            <ul id="event-list" class="flex-1 overflow-y-auto p-2 space-y-1"></ul>
+            <div class="p-3 border-t border-gray-100">
+                <p id="live-indicator" class="text-xs text-center text-gray-400"></p>
+            </div>
+        </aside>
+
+        <!-- 右側：編輯區 -->
+        <main class="flex-1 overflow-y-auto p-6">
+
+            <!-- 空狀態 -->
+            <div id="empty-state" class="flex flex-col items-center justify-center h-full text-gray-400">
+                <svg class="w-16 h-16 mb-4 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                <p class="text-lg font-medium">請從左側選擇活動</p>
+                <p class="text-sm mt-1">或點擊「新建活動」開始</p>
+            </div>
+
+            <!-- 編輯表單 -->
+            <div id="editor" class="hidden max-w-3xl mx-auto space-y-6">
+
+                <!-- 操作列 -->
+                <div class="bg-white rounded-xl shadow-sm p-4 flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <span class="text-sm text-gray-500">正在編輯：</span>
+                        <span id="editing-label" class="text-sm font-bold text-indigo-700"></span>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="saveEvent()" class="btn-primary">儲存草稿</button>
+                        <button onclick="publishEvent()" class="btn-green">🚀 發布到首頁</button>
+                        <button onclick="deleteEvent()" class="btn-danger">刪除此活動</button>
+                    </div>
+                </div>
+
+                <!-- 1. 基本資訊 -->
+                <section class="bg-white rounded-xl shadow-sm p-6">
+                    <h2 class="section-title">基本資訊</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="field-label">活動標題（頁首及瀏覽器分頁）</label>
+                            <input id="f-title" type="text" class="input-base" placeholder="2026 劍橋教會野外禮拜活動">
+                        </div>
+                        <div>
+                            <label class="field-label">頁腳版權文字</label>
+                            <input id="f-footer" type="text" class="input-base">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 2. 活動行程 -->
+                <section class="bg-white rounded-xl shadow-sm p-6">
+                    <h2 class="section-title">活動行程</h2>
+                    <div class="mb-4">
+                        <label class="field-label">行程日期（顯示於標題，如 9/21）</label>
+                        <input id="f-schedule-date" type="text" class="input-base" placeholder="9/21">
+                    </div>
+                    <div id="schedule-rows" class="space-y-2 mb-3"></div>
+                    <button onclick="addScheduleRow()" class="btn-ghost w-full py-2">＋ 新增行程項目</button>
+                </section>
+
+                <!-- 3. 報名及其他資訊 -->
+                <section class="bg-white rounded-xl shadow-sm p-6">
+                    <h2 class="section-title">報名及其他資訊</h2>
+                    <div class="space-y-4 mb-4">
+                        <div>
+                            <label class="field-label">開場說明</label>
+                            <textarea id="f-notes-intro" rows="2" class="input-base"></textarea>
+                        </div>
+                    </div>
+                    <div id="notes-rows" class="space-y-2 mb-3"></div>
+                    <button onclick="addNotesRow()" class="btn-ghost w-full py-2 mb-4">＋ 新增資訊項目</button>
+                    <div>
+                        <label class="field-label">結語</label>
+                        <input id="f-notes-closing" type="text" class="input-base">
+                    </div>
+                </section>
+
+                <!-- 4. 用餐資訊 -->
+                <section class="bg-white rounded-xl shadow-sm p-6">
+                    <h2 class="section-title">用餐資訊</h2>
+                    <div class="space-y-4 mb-4">
+                        <div>
+                            <label class="field-label">說明文字</label>
+                            <textarea id="f-meals-intro" rows="2" class="input-base"></textarea>
+                        </div>
+                    </div>
+                    <div id="restaurants-list" class="space-y-3 mb-3"></div>
+                    <button onclick="addRestaurant()" class="btn-ghost w-full py-2 mb-4">＋ 新增餐廳</button>
+                    <div>
+                        <label class="field-label">溫馨提醒</label>
+                        <input id="f-meals-reminder" type="text" class="input-base">
+                    </div>
+                </section>
+
+                <!-- 5. 環境照片 -->
+                <section class="bg-white rounded-xl shadow-sm p-6">
+                    <h2 class="section-title">環境照片</h2>
+                    <p class="text-xs text-gray-400 mb-3">圖片請上傳至 Media/ 資料夾後填入相對路徑</p>
+                    <div id="photos-rows" class="space-y-2 mb-3"></div>
+                    <button onclick="addPhotoRow()" class="btn-ghost w-full py-2">＋ 新增照片</button>
+                </section>
+
+                <!-- 底部操作列（同頂部） -->
+                <div class="bg-white rounded-xl shadow-sm p-4 flex flex-wrap justify-end gap-2">
+                    <button onclick="saveEvent()" class="btn-primary">儲存草稿</button>
+                    <button onclick="publishEvent()" class="btn-green">🚀 發布到首頁</button>
+                </div>
+
+            </div><!-- /editor -->
+        </main>
+    </div><!-- /flex -->
+</div><!-- /admin-screen -->
+
+<!-- Toast 通知 -->
+<div id="toast" class="fixed bottom-6 right-6 bg-gray-800 text-white text-sm px-5 py-3 rounded-xl shadow-xl opacity-0 pointer-events-none z-50"></div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="firebase-config.js"></script>
+
+<script>
+/* ============================================================
+   初始化 Firebase
+   ============================================================ */
+firebase.initializeApp(FIREBASE_CONFIG);
+const db   = firebase.firestore();
+const auth = firebase.auth();
+
+/* ============================================================
+   預設活動資料（新建活動時的範本）
+   ============================================================ */
+const DEFAULT_EVENT = {
+    title: "劍橋教會野外禮拜活動",
+    schedule: {
+        date: "",
+        items: [
+            { time: "08:00 - 08:30", activity: "報到與集合" }
+        ]
+    },
+    notes: {
+        intro: "感謝您對本次野外禮拜的興趣！請注意以下重要事項：",
+        items: [
+            { label: "活動時間", text: "" },
+            { label: "報名方式", text: "" },
+            { label: "活動費用", text: "" },
+            { label: "交通方式", text: "" },
+            { label: "聯絡方式", text: "" }
+        ],
+        closing: "期待與您一同參加！"
+    },
+    meals: {
+        intro: "本次野外禮拜提供代訂美味午餐，請於報名時同步告知是否需要代訂午餐。",
+        restaurants: [],
+        reminder: "請務必在活動前三天完成餐點預訂，謝謝！"
+    },
+    photos: [],
+    footer: "© 台灣基督長老教會劍橋教會. 保留所有權利。"
+};
+
+/* ============================================================
+   Auth 狀態監聽
+   ============================================================ */
+let currentEventId = null;
+let currentLiveId  = null;
+let restaurantSeq  = 0;
+
+auth.onAuthStateChanged(user => {
+    if (user) {
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('admin-screen').classList.remove('hidden');
+        document.getElementById('user-email').textContent = user.email;
+        loadEventsList();
+    } else {
+        document.getElementById('login-screen').classList.remove('hidden');
+        document.getElementById('admin-screen').classList.add('hidden');
+    }
+});
+
+/* ============================================================
+   登入 / 登出
+   ============================================================ */
+function doLogin() {
+    const email    = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value;
+    const errBox   = document.getElementById('login-error');
+    errBox.classList.add('hidden');
+    auth.signInWithEmailAndPassword(email, password)
+        .catch(err => {
+            errBox.textContent = '登入失敗：' + err.message;
+            errBox.classList.remove('hidden');
+        });
+}
+
+function doLogout() {
+    auth.signOut();
+}
+
+/* ============================================================
+   活動列表
+   ============================================================ */
+async function loadEventsList() {
+    const snapshot = await db.collection('events').get();
+    const ids = [];
+    snapshot.forEach(doc => { if (doc.id !== 'current') ids.push(doc.id); });
+    ids.sort().reverse();
+
+    // 讀取目前發布的活動 ID
+    try {
+        const liveSnap = await db.collection('meta').doc('settings').get();
+        currentLiveId = liveSnap.exists ? liveSnap.data().activeEventId : null;
+    } catch (_) { currentLiveId = null; }
+
+    renderEventList(ids);
+    updateLiveIndicator();
+}
+
+function renderEventList(ids) {
+    const ul = document.getElementById('event-list');
+    ul.innerHTML = ids.map(id => `
+        <li>
+            <button onclick="loadEvent('${escAttr(id)}')"
+                    id="ev-btn-${escAttr(id)}"
+                    class="w-full text-left px-3 py-2 rounded-lg text-sm hover:bg-indigo-50 transition-colors
+                           ${id === currentEventId ? 'bg-indigo-100 font-semibold text-indigo-700' : 'text-gray-700'}">
+                ${escHtml(id)}
+                ${id === currentLiveId ? '<span class="ml-1 text-xs text-green-600 font-normal">● 已發布</span>' : ''}
+            </button>
+        </li>
+    `).join('');
+}
+
+function updateLiveIndicator() {
+    document.getElementById('live-indicator').textContent =
+        currentLiveId ? `目前首頁：${currentLiveId}` : '首頁尚未發布任何活動';
+}
+
+/* ============================================================
+   讀取 / 儲存 / 發布 / 刪除 活動
+   ============================================================ */
+async function loadEvent(eventId) {
+    currentEventId = eventId;
+    document.getElementById('editing-label').textContent = eventId;
+    document.getElementById('empty-state').classList.add('hidden');
+    document.getElementById('editor').classList.remove('hidden');
+
+    const snap = await db.collection('events').doc(eventId).get();
+    populateForm(snap.exists ? snap.data() : DEFAULT_EVENT);
+
+    // 更新側欄選中狀態
+    document.querySelectorAll('#event-list button').forEach(btn => {
+        btn.classList.toggle('bg-indigo-100', btn.id === `ev-btn-${eventId}`);
+        btn.classList.toggle('font-semibold', btn.id === `ev-btn-${eventId}`);
+        btn.classList.toggle('text-indigo-700', btn.id === `ev-btn-${eventId}`);
+    });
+}
+
+async function saveEvent() {
+    if (!currentEventId) return;
+    try {
+        await db.collection('events').doc(currentEventId).set(collectFormData());
+        showToast('✅ 草稿已儲存（首頁尚未更新）');
+    } catch (e) {
+        alert('儲存失敗：' + e.message);
+    }
+}
+
+async function publishEvent() {
+    if (!currentEventId) return;
+    if (!confirm(`確定要將「${currentEventId}」發布到首頁？訪客將立即看到更新。`)) return;
+    try {
+        const data = collectFormData();
+        await db.collection('events').doc(currentEventId).set(data);
+        await db.collection('events').doc('current').set(data);
+        await db.collection('meta').doc('settings').set({ activeEventId: currentEventId });
+        currentLiveId = currentEventId;
+        updateLiveIndicator();
+        await loadEventsList();
+        showToast('🚀 已發布到首頁！');
+    } catch (e) {
+        alert('發布失敗：' + e.message);
+    }
+}
+
+async function deleteEvent() {
+    if (!currentEventId) return;
+    if (currentEventId === currentLiveId) {
+        alert('此活動目前正在首頁顯示，無法刪除。請先發布其他活動後再試。');
+        return;
+    }
+    if (!confirm(`確定要刪除「${currentEventId}」？此操作無法復原。`)) return;
+    try {
+        await db.collection('events').doc(currentEventId).delete();
+        currentEventId = null;
+        document.getElementById('editor').classList.add('hidden');
+        document.getElementById('empty-state').classList.remove('hidden');
+        await loadEventsList();
+        showToast('已刪除');
+    } catch (e) {
+        alert('刪除失敗：' + e.message);
+    }
+}
+
+async function createNewEvent() {
+    const id = prompt('請輸入活動識別碼（如 2026 或 2026-秋季）：');
+    if (!id || !id.trim()) return;
+    const trimmedId = id.trim();
+    try {
+        const snap = await db.collection('events').doc(trimmedId).get();
+        if (snap.exists && !confirm(`「${trimmedId}」已存在，要覆蓋嗎？`)) return;
+        await db.collection('events').doc(trimmedId).set({ ...DEFAULT_EVENT });
+        await loadEventsList();
+        loadEvent(trimmedId);
+    } catch (e) {
+        alert('建立失敗：' + e.message);
+    }
+}
+
+/* ============================================================
+   表單填充
+   ============================================================ */
+function populateForm(ev) {
+    document.getElementById('f-title').value           = ev.title   ?? '';
+    document.getElementById('f-footer').value          = ev.footer  ?? '';
+    document.getElementById('f-schedule-date').value   = ev.schedule?.date ?? '';
+    document.getElementById('f-notes-intro').value     = ev.notes?.intro   ?? '';
+    document.getElementById('f-notes-closing').value   = ev.notes?.closing ?? '';
+    document.getElementById('f-meals-intro').value     = ev.meals?.intro   ?? '';
+    document.getElementById('f-meals-reminder').value  = ev.meals?.reminder ?? '';
+
+    renderScheduleRows(ev.schedule?.items ?? []);
+    renderNotesRows(ev.notes?.items ?? []);
+    renderRestaurants(ev.meals?.restaurants ?? []);
+    renderPhotoRows(ev.photos ?? []);
+}
+
+/* ============================================================
+   行程列表
+   ============================================================ */
+function renderScheduleRows(items) {
+    document.getElementById('schedule-rows').innerHTML = items.map((item, i) =>
+        scheduleRowHtml(item.time, item.activity, i)
+    ).join('');
+}
+
+function scheduleRowHtml(time, activity, i) {
+    return `
+    <div class="row-card flex gap-2 items-start schedule-row">
+        <div class="flex-shrink-0 w-36">
+            <label class="field-label">時間</label>
+            <input type="text" class="input-base row-time" value="${escAttr(time)}" placeholder="08:00 - 09:00">
+        </div>
+        <div class="flex-1">
+            <label class="field-label">
+                活動內容
+                <span class="font-normal text-gray-400 ml-1">（支援 &lt;br&gt; 換行）</span>
+            </label>
+            <textarea class="input-base row-activity" rows="2">${escHtml(activity)}</textarea>
+        </div>
+        <button type="button" onclick="this.closest('.schedule-row').remove()"
+                class="btn-danger mt-6 flex-shrink-0">✕</button>
+    </div>`;
+}
+
+function addScheduleRow() {
+    const container = document.getElementById('schedule-rows');
+    const div = document.createElement('div');
+    div.innerHTML = scheduleRowHtml('', '', Date.now());
+    container.appendChild(div.firstElementChild);
+}
+
+/* ============================================================
+   報名資訊列表
+   ============================================================ */
+function renderNotesRows(items) {
+    document.getElementById('notes-rows').innerHTML = items.map(item =>
+        notesRowHtml(item.label, item.text)
+    ).join('');
+}
+
+function notesRowHtml(label, text) {
+    return `
+    <div class="row-card flex gap-2 items-start notes-row">
+        <div class="flex-shrink-0 w-32">
+            <label class="field-label">標籤</label>
+            <input type="text" class="input-base row-label" value="${escAttr(label)}" placeholder="活動費用">
+        </div>
+        <div class="flex-1">
+            <label class="field-label">說明</label>
+            <textarea class="input-base row-text" rows="2">${escHtml(text)}</textarea>
+        </div>
+        <button type="button" onclick="this.closest('.notes-row').remove()"
+                class="btn-danger mt-6 flex-shrink-0">✕</button>
+    </div>`;
+}
+
+function addNotesRow() {
+    const container = document.getElementById('notes-rows');
+    const div = document.createElement('div');
+    div.innerHTML = notesRowHtml('', '');
+    container.appendChild(div.firstElementChild);
+}
+
+/* ============================================================
+   餐廳列表（含巢狀圖片）
+   ============================================================ */
+function renderRestaurants(restaurants) {
+    restaurantSeq = 0;
+    document.getElementById('restaurants-list').innerHTML = restaurants.map(r =>
+        restaurantCardHtml(r.name, r.type, r.images ?? [])
+    ).join('');
+}
+
+function restaurantCardHtml(name, type, images) {
+    const rid = `r${restaurantSeq++}`;
+    const imgRows = images.map(img => imageRowHtml(img.src, img.alt)).join('');
+    return `
+    <div class="border border-gray-200 rounded-xl p-4 restaurant-card" data-rid="${rid}">
+        <div class="flex gap-2 mb-3 items-start">
+            <div class="flex-1">
+                <label class="field-label">餐廳名稱</label>
+                <input type="text" class="input-base r-name" value="${escAttr(name)}" placeholder="餐廳名稱">
+            </div>
+            <div class="w-36">
+                <label class="field-label">類型</label>
+                <select class="input-base r-type">
+                    <option value="order" ${type === 'order' ? 'selected' : ''}>代訂</option>
+                    <option value="self"  ${type === 'self'  ? 'selected' : ''}>自行訂位</option>
+                </select>
+            </div>
+            <button type="button" onclick="this.closest('.restaurant-card').remove()"
+                    class="btn-danger mt-6 flex-shrink-0">✕ 移除</button>
+        </div>
+        <div class="pl-2 border-l-2 border-indigo-100">
+            <p class="text-xs font-semibold text-gray-400 uppercase mb-2">圖片列表</p>
+            <div class="image-rows space-y-2 mb-2">${imgRows}</div>
+            <button type="button" onclick="addImageRow(this)"
+                    class="btn-ghost text-xs py-1.5">＋ 新增圖片</button>
+        </div>
+    </div>`;
+}
+
+function imageRowHtml(src, alt) {
+    return `
+    <div class="flex gap-2 items-center image-row">
+        <input type="text" class="input-base img-src" value="${escAttr(src)}" placeholder="Media/Res1_1.png">
+        <input type="text" class="input-base img-alt" value="${escAttr(alt)}" placeholder="圖片說明">
+        <button type="button" onclick="this.closest('.image-row').remove()"
+                class="btn-danger flex-shrink-0">✕</button>
+    </div>`;
+}
+
+function addRestaurant() {
+    const container = document.getElementById('restaurants-list');
+    const div = document.createElement('div');
+    div.innerHTML = restaurantCardHtml('', 'order', []);
+    container.appendChild(div.firstElementChild);
+}
+
+function addImageRow(btn) {
+    const imageRows = btn.previousElementSibling;
+    const div = document.createElement('div');
+    div.innerHTML = imageRowHtml('', '');
+    imageRows.appendChild(div.firstElementChild);
+}
+
+/* ============================================================
+   環境照片列表
+   ============================================================ */
+function renderPhotoRows(photos) {
+    document.getElementById('photos-rows').innerHTML = photos.map(p =>
+        photoRowHtml(p.src, p.alt)
+    ).join('');
+}
+
+function photoRowHtml(src, alt) {
+    return `
+    <div class="flex gap-2 items-center photo-row">
+        <input type="text" class="input-base row-src" value="${escAttr(src)}" placeholder="Media/Park1.png">
+        <input type="text" class="input-base row-alt" value="${escAttr(alt)}" placeholder="圖片說明">
+        <button type="button" onclick="this.closest('.photo-row').remove()"
+                class="btn-danger flex-shrink-0">✕</button>
+    </div>`;
+}
+
+function addPhotoRow() {
+    const container = document.getElementById('photos-rows');
+    const div = document.createElement('div');
+    div.innerHTML = photoRowHtml('', '');
+    container.appendChild(div.firstElementChild);
+}
+
+/* ============================================================
+   收集表單資料
+   ============================================================ */
+function collectFormData() {
+    return {
+        title: v('f-title'),
+        footer: v('f-footer'),
+        schedule: {
+            date:  v('f-schedule-date'),
+            items: [...document.querySelectorAll('#schedule-rows .schedule-row')].map(row => ({
+                time:     row.querySelector('.row-time').value.trim(),
+                activity: row.querySelector('.row-activity').value.trim()
+            }))
+        },
+        notes: {
+            intro:   v('f-notes-intro'),
+            items:   [...document.querySelectorAll('#notes-rows .notes-row')].map(row => ({
+                label: row.querySelector('.row-label').value.trim(),
+                text:  row.querySelector('.row-text').value.trim()
+            })),
+            closing: v('f-notes-closing')
+        },
+        meals: {
+            intro: v('f-meals-intro'),
+            restaurants: [...document.querySelectorAll('#restaurants-list .restaurant-card')].map(card => ({
+                name:   card.querySelector('.r-name').value.trim(),
+                type:   card.querySelector('.r-type').value,
+                images: [...card.querySelectorAll('.image-row')].map(row => ({
+                    src: row.querySelector('.img-src').value.trim(),
+                    alt: row.querySelector('.img-alt').value.trim()
+                }))
+            })),
+            reminder: v('f-meals-reminder')
+        },
+        photos: [...document.querySelectorAll('#photos-rows .photo-row')].map(row => ({
+            src: row.querySelector('.row-src').value.trim(),
+            alt: row.querySelector('.row-alt').value.trim()
+        }))
+    };
+}
+
+/* ============================================================
+   工具函式
+   ============================================================ */
+function v(id) { return document.getElementById(id).value.trim(); }
+
+function escHtml(str) {
+    return String(str ?? '')
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function escAttr(str) { return escHtml(str); }
+
+let toastTimer;
+function showToast(msg) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.style.opacity = '1';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { el.style.opacity = '0'; }, 2500);
+}
+</script>
+</body>
+</html>
