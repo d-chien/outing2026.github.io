@@ -254,24 +254,15 @@
         });
     });
     </script>
-    <!-- Firebase SDK (compat) -->
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-    <script src="firebase-config.js"></script>
     <script>
-    // 從 Firestore 載入已發布的活動資料，成功則覆蓋預設值並重新渲染
+    // 從 data/current.json 載入已發布的活動資料，成功則覆蓋預設值並重新渲染
     (async function loadLiveData() {
         try {
-            firebase.initializeApp(FIREBASE_CONFIG);
-            const db = firebase.firestore();
-            const snap = await db.collection('events').doc('current').get();
-            if (snap.exists) {
-                EVENT = snap.data();
-                render();
-            }
+            const res = await fetch('data/current.json');
+            if (res.ok) { EVENT = await res.json(); render(); }
         } catch (e) {
-            // Firestore 未設定或網路錯誤時靜默降級，使用 index.html 內建預設值
-            console.warn('[Firebase] 無法載入線上資料，使用內建預設值', e);
+            // 網路錯誤或本機開啟時靜默降級，使用 index.html 內建預設值
+            console.warn('無法載入 data/current.json，使用內建預設值', e);
         }
     })();
     </script>
