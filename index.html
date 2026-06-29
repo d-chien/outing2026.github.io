@@ -3,292 +3,256 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2025劍橋教會野外禮拜</title>
+    <title id="page-title">載入中...</title>
     <link rel="icon" href="Logo_Black_Fish.png" type="image/png">
-    <!-- 載入 Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- 設定 Inter 字體，提供更好的閱讀體驗 -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6; /* 淺灰色背景 */e
-            color: #374151; /* 深灰色文字 */
-        }
-        /* 自定義滾動條樣式，使其更美觀 */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #e0e0e0;
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #a0a0a0;
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #808080;
-        }
-
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; color: #374151; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #e0e0e0; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #a0a0a0; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #808080; }
         @media (min-width: 300px) {
-            /* 顯示 Logo 主文字區塊 */
-            .show-on-300-plus {
-                display: block !important; /* 使用 !important 確保覆蓋 Tailwind 的 'hidden' */
-            }
-            /* 隱藏小螢幕替代文字區塊 */
-            .hide-on-300-plus {
-                display: none !important; /* 使用 !important 確保覆蓋 Tailwind 的 'block' */
-            }
+            .show-on-300-plus { display: block !important; }
+            .hide-on-300-plus { display: none !important; }
         }
     </style>
 </head>
 <body class="antialiased">
     <div class="min-h-screen flex flex-col items-center py-8 px-4 sm:px-6 lg:px-8">
-        <!-- 網頁頂部 Logo 區塊 -->
+
         <header class="w-full max-w-4xl bg-white rounded-xl shadow-lg p-6 mb-8 flex justify-center items-center">
             <div class="h-20 w-full flex items-center justify-center rounded-lg text-gray-500 text-lg">
                 <img src="Logo_Black_Fish.png" alt="Church Logo" class="hidden show-on-300-plus h-full max-h-15 w-auto object-contain">
-<!--                 <img src="Logo_Black_Fish.png" alt="Church Logo" class="hidden xs:block h-full max-h-10 w-auto object-contain"> -->
-<!--                 <img src="Logo_Black_Fish.png" alt="Church Logo" class="h-full object-contain"> -->
-                <span class="font-semibold text-xs sm:text-base md:text-lg lg:text-xl xl:text-2xl text-center px-2">
-                    2025 劍橋教會野外禮拜活動
-                </span>
-                <!-- 在極小螢幕下顯示的替代文字（當 Logo 隱藏時） -->
-<!--                 <span class="font-semibold text-sm text-center sm:hidden">
-                    野外禮拜
-                </span> -->
-<!--                 <span class="font-semibold text-xs sm:text-base md:text-lg lg:text-xl xl:text-2xl text-center whitespace-nowrap px-2">
-                    2025 劍橋教會野外禮拜活動
-                </span> -->
-<!--                 <span class="font-semibold">2025 劍橋教會野外禮拜活動</span> -->
+                <span id="header-title" class="font-semibold text-xs sm:text-base md:text-lg lg:text-xl xl:text-2xl text-center px-2"></span>
             </div>
         </header>
 
-        <!-- 主要內容區塊 -->
         <main class="w-full max-w-4xl space-y-8">
 
-            <!-- 1. 活動行程區塊 -->
+            <!-- 活動行程 -->
             <section id="schedule" class="bg-white rounded-xl shadow-lg p-6">
-                <h2 class="text-3xl font-bold text-center text-indigo-700 mb-6 border-b-2 border-indigo-200 pb-3">活動行程(9/21)</h2>
+                <h2 id="schedule-title" class="text-3xl font-bold text-center text-indigo-700 mb-6 border-b-2 border-indigo-200 pb-3"></h2>
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-indigo-50">
                             <tr>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tl-lg">
-                                    時間
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tr-lg">
-                                    活動內容
-                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tl-lg">時間</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tr-lg">活動內容</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            <!-- 範例行程項目 -->
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    08:00 - 08:30
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                                    報到與集合(百齡國小正門口)
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    08:30 - 10:30
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                                    交通：前往新竹公園教會
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    10:30 - 12:00
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                                    參加新竹公園教會台語禮拜
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    12:00 - 13:30
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                                    交通：前往新竹公園及餐廳，午餐時間
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    13:30 - 15:30
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                                    觀光導覽(玻璃展演)及自由活動
-                                    <br>
-                                    新竹公園內有動物園，可以自費前往參觀
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    15:30 - 17:00
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                                    交通：回到百齡國小
-                                </td>
-                            </tr>
-                            <!-- 您可以在此添加更多行程項目 -->
-                        </tbody>
+                        <tbody id="schedule-body" class="bg-white divide-y divide-gray-200"></tbody>
                     </table>
                 </div>
             </section>
 
-            <!-- 4. 報名及其他資訊區塊 -->
+            <!-- 報名及其他資訊 -->
             <section id="notes" class="bg-white rounded-xl shadow-lg p-6">
                 <h2 class="text-3xl font-bold text-center text-indigo-700 mb-6 border-b-2 border-indigo-200 pb-3">報名及其他資訊</h2>
                 <div class="prose max-w-none text-gray-700">
-                    <p class="mb-4">
-                        感謝您對本次野外禮拜的興趣！請注意以下重要事項：
-                    </p>
-                    <ul class="list-disc list-inside space-y-2 mb-4">
-                        <li><strong>活動時間：</strong> 2025.09.21</li>
-                        <li><strong>報名方式：</strong> 請於8/31前向財務組登記報名，如有要登記名佳鄉或好室鍋物也請一併登記。</li>
-                        <li><strong>活動費用：</strong> 大人均一價100元，學生持學生證報名免費。</li>
-                        <li><strong>交通方式：</strong> 報名時可同步登記乘坐遊覽車，或自行開車前往。</li>
-                        <li><strong>聯絡方式：</strong> 如有任何疑問，請聯繫 陳慶鐘 長老。</li>
-                    </ul>
-                    <p class="text-center text-gray-600 font-medium mt-6">
-                        期待與您一同參加！
-                    </p>
+                    <p id="notes-intro" class="mb-4"></p>
+                    <ul id="notes-list" class="list-disc list-inside space-y-2 mb-4"></ul>
+                    <p id="notes-closing" class="text-center text-gray-600 font-medium mt-6"></p>
                 </div>
             </section>
 
-            <!-- 3. 用餐資訊區塊 -->
+            <!-- 用餐資訊 -->
             <section id="meals" class="bg-white rounded-xl shadow-lg p-6">
                 <h2 class="text-3xl font-bold text-center text-indigo-700 mb-6 border-b-2 border-indigo-200 pb-3">用餐資訊</h2>
                 <div class="text-center mb-6">
-                    <p class="text-lg mb-4">本次野外禮拜提供代訂美味午餐，請於報名時同步告知是否需要代訂午餐。</p>
-<!--                     <p class="text-lg mb-4">本次野外禮拜提供美味午餐，請透過以下連結預訂您的餐點：</p>
-                    <a href="https://forms.gle/YOUR_GOOGLE_FORM_LINK_HERE" target="_blank" rel="noopener noreferrer"
-                       class="inline-flex items-center px-8 py-4 border border-transparent text-lg font-semibold rounded-full shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-300 transform hover:scale-105">
-                        <svg class="-ml-1 mr-3 h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-                        </svg>
-                        點擊此處預訂餐點
-                    </a> -->
-                    <h3 class="text-3xl font-bold text-center text-indigo-700 mb-3 border-b-2 border-indigo-200 pb-3">午餐代訂1:名佳鄉</h3>
-                        <div class="flex flex-wrap justify-center gap-4 mt-3">
-                            <div class="mt-3 flex justify-center">
-                                <img src="Media/Res4_1.png" alt="名佳鄉外觀" class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105 cursor-pointer">
-                            </div>
-                            <div class="mt-3 flex justify-center">
-                                <img src="Media/Res4_2.png" alt="名佳鄉菜單" class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105 cursor-pointer">
-                            </div>
-                            <div class="mt-3 flex justify-center">
-                                <img src="Media/Res4_3.png" alt="名佳鄉菜單" class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105 cursor-pointer">
-                            </div>
-                        </div>
-
-                    <h3 class="text-3xl font-bold text-center text-indigo-700 mb-3 mt-6 border-b-2 border-indigo-200 pb-3">午餐代訂2:好室鍋物</h3>
-                        <div class="flex flex-wrap justify-center gap-4 mt-3">
-                            <div class="mt-3 flex justify-center">
-                                <img src="Media/Res2_1.png" alt="好室鍋物外觀" class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105 cursor-pointer">
-                            </div>
-                            <div class="mt-3 flex justify-center">
-                                <img src="Media/Res2_2.png" alt="好室鍋物菜單" class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105 cursor-pointer">
-                            </div>
-                        </div>
-                    <h3 class="text-3xl font-bold text-center text-indigo-700 mb-3 mt-6 border-b-2 border-indigo-200 pb-3">自行訂位：叉子餐廳</h3>
-                    <p class="text-sm text-gray-500 mt-4">請務必在活動前三天完成餐點預訂，謝謝！</p>
+                    <p id="meals-intro" class="text-lg mb-4"></p>
+                    <div id="meals-list"></div>
+                    <p id="meals-reminder" class="text-sm text-gray-500 mt-4"></p>
                 </div>
             </section>
 
-            <!-- 2. 環境照片牆區塊 -->
+            <!-- 環境照片 -->
             <section id="photos" class="bg-white rounded-xl shadow-lg p-6">
                 <h2 class="text-3xl font-bold text-center text-indigo-700 mb-6 border-b-2 border-indigo-200 pb-3">環境照片</h2>
-<!--                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"> -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <!-- 範例照片項目 -->
-                    <div class="relative group rounded-lg overflow-hidden shadow-md">
-                        <img src="Media/Park1.png" alt="新竹公園地圖" class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105 cursor-pointer">
-<!--                         <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                            <p class="text-white text-lg font-semibold">美麗的戶外</p>
-                        </div> -->
-                    </div>
-                    <div class="relative group rounded-lg overflow-hidden shadow-md">
-                        <img src="Media/Park2.png" alt="新竹公園景觀" class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105 cursor-pointer">
-<!--                         <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                            <p class="text-white text-lg font-semibold">陽光普照</p>
-                        </div> -->
-                    </div>
-                    <div class="relative group rounded-lg overflow-hidden shadow-md">
-                        <img src="Media/Park3.png" alt="新竹公園景觀" class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105 cursor-pointer">
-<!--                         <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                            <p class="text-white text-lg font-semibold">綠意盎然</p>
-                        </div> -->
-                    </div>
-                    <div class="relative group rounded-lg overflow-hidden shadow-md">
-                        <img src="Media/Park4.png" alt="新竹公園景觀" class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105 cursor-pointer">
-<!--                         <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                            <p class="text-white text-lg font-semibold">寧靜時刻</p>
-                        </div> -->
-                    </div>
-                </div>
-                <!-- <p class="text-center text-gray-600 mt-6 text-sm">點擊照片可查看大圖 (此範例未實作點擊功能，僅為展示)</p> -->
+                <div id="photos-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
             </section>
-
-            
 
         </main>
 
-        <!-- 頁腳 -->
         <footer class="w-full max-w-4xl text-center text-gray-500 text-sm mt-12 py-4 border-t border-gray-200">
-            <p>&copy; 台灣基督長老教會劍橋教會. 保留所有權利。</p>
+            <p id="footer-text"></p>
         </footer>
     </div>
 
-    <!-- 圖片放大視窗 (Modal) 結構 -->
+    <!-- 圖片放大視窗 -->
     <div id="imageModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden p-4">
         <div class="relative bg-white rounded-lg p-4 max-w-3xl max-h-full overflow-auto">
-            <!-- 關閉按鈕 -->
             <button id="closeModal" class="absolute top-1 right-1 text-gray-800 hover:text-gray-600 text-3xl font-bold leading-none">&times;</button>
-            <!-- 放大後的圖片 -->
             <img id="modalImage" src="" alt="" class="max-w-full max-h-[100vh] mx-auto rounded-lg">
-            <!-- 圖片說明文字 -->
             <p id="modalCaption" class="text-center text-gray-700 mt-2 text-lg font-semibold"></p>
         </div>
     </div>
 
-    <!-- JavaScript 程式碼 -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const imageModal = document.getElementById('imageModal'); // 圖片放大視窗容器
-            const modalImage = document.getElementById('modalImage'); // 放大視窗中的圖片元素
-            const modalCaption = document.getElementById('modalCaption'); // 放大視窗中的圖片說明
-            const closeModal = document.getElementById('closeModal'); // 關閉按鈕
-            const galleryImages = document.querySelectorAll('#photos img, #meals img'); // 所有照片牆中的圖片
+    /* ===================================================================
+       資料設定區 — 每次更換活動只需修改這個區塊，不需要動下方的程式碼
+       =================================================================== */
+    const EVENT = {
+        /* 頁面標題與頁首文字 */
+        title: "2025 劍橋教會野外禮拜活動",
 
-            // 為每一張圖片添加點擊事件監聽器
-            galleryImages.forEach(image => {
-                image.addEventListener('click', function() {
-                    modalImage.src = this.src; // 設定放大圖片的來源為點擊圖片的來源
-                    modalImage.alt = this.alt; // 設定放大圖片的替代文字
-                    modalCaption.textContent = this.alt; // 設定圖片說明為替代文字
-                    imageModal.classList.remove('hidden'); // 顯示放大視窗
-                });
-            });
+        /* 活動行程：date 顯示於區塊標題，items 為各行程項目 */
+        schedule: {
+            date: "9/21",
+            items: [
+                { time: "08:00 - 08:30", activity: "報到與集合(百齡國小正門口)" },
+                { time: "08:30 - 10:30", activity: "交通：前往新竹公園教會" },
+                { time: "10:30 - 12:00", activity: "參加新竹公園教會台語禮拜" },
+                { time: "12:00 - 13:30", activity: "交通：前往新竹公園及餐廳，午餐時間" },
+                {
+                    time: "13:30 - 15:30",
+                    activity: "觀光導覽(玻璃展演)及自由活動<br>新竹公園內有動物園，可以自費前往參觀"
+                },
+                { time: "15:30 - 17:00", activity: "交通：回到百齡國小" }
+            ]
+        },
 
-            // 為關閉按鈕添加點擊事件監聽器
-            closeModal.addEventListener('click', function() {
-                imageModal.classList.add('hidden'); // 隱藏放大視窗
-            });
+        /* 報名及其他資訊 */
+        notes: {
+            intro: "感謝您對本次野外禮拜的興趣！請注意以下重要事項：",
+            items: [
+                { label: "活動時間", text: "2025.09.21" },
+                { label: "報名方式", text: "請於8/31前向財務組登記報名，如有要登記名佳鄉或好室鍋物也請一併登記。" },
+                { label: "活動費用", text: "大人均一價100元，學生持學生證報名免費。" },
+                { label: "交通方式", text: "報名時可同步登記乘坐遊覽車，或自行開車前往。" },
+                { label: "聯絡方式", text: "如有任何疑問，請聯繫 陳慶鐘 長老。" }
+            ],
+            closing: "期待與您一同參加！"
+        },
 
-            // 點擊放大視窗的黑色背景區域時關閉視窗
-            imageModal.addEventListener('click', function(e) {
-                // 檢查點擊事件是否發生在 modalImage 或 modalCaption 之外
-                if (e.target === imageModal) {
-                    imageModal.classList.add('hidden'); // 隱藏放大視窗
+        /* 用餐資訊：
+           type 可填 "order"（代訂）或 "self"（自行訂位）
+           images 為空陣列則不顯示圖片區 */
+        meals: {
+            intro: "本次野外禮拜提供代訂美味午餐，請於報名時同步告知是否需要代訂午餐。",
+            restaurants: [
+                {
+                    name: "午餐代訂1：名佳鄉",
+                    type: "order",
+                    images: [
+                        { src: "Media/Res4_1.png", alt: "名佳鄉外觀" },
+                        { src: "Media/Res4_2.png", alt: "名佳鄉菜單" },
+                        { src: "Media/Res4_3.png", alt: "名佳鄉菜單" }
+                    ]
+                },
+                {
+                    name: "午餐代訂2：好室鍋物",
+                    type: "order",
+                    images: [
+                        { src: "Media/Res2_1.png", alt: "好室鍋物外觀" },
+                        { src: "Media/Res2_2.png", alt: "好室鍋物菜單" }
+                    ]
+                },
+                {
+                    name: "自行訂位：叉子餐廳",
+                    type: "self",
+                    images: []
                 }
-            });
+            ],
+            reminder: "請務必在活動前三天完成餐點預訂，謝謝！"
+        },
+
+        /* 環境照片 */
+        photos: [
+            { src: "Media/Park1.png", alt: "新竹公園地圖" },
+            { src: "Media/Park2.png", alt: "新竹公園景觀" },
+            { src: "Media/Park3.png", alt: "新竹公園景觀" },
+            { src: "Media/Park4.png", alt: "新竹公園景觀" }
+        ],
+
+        /* 頁腳 */
+        footer: "© 台灣基督長老教會劍橋教會. 保留所有權利。"
+    };
+    /* ===================================================================
+       以下為渲染程式碼，更換活動資料時不需要修改
+       =================================================================== */
+
+    function render() {
+        // 頁面標題
+        document.getElementById('page-title').textContent = EVENT.title;
+        document.getElementById('header-title').textContent = EVENT.title;
+
+        // 行程表
+        document.getElementById('schedule-title').textContent = `活動行程(${EVENT.schedule.date})`;
+        const tbody = document.getElementById('schedule-body');
+        tbody.innerHTML = EVENT.schedule.items.map(item => `
+            <tr>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${item.time}</td>
+                <td class="px-6 py-4 text-sm text-gray-700">${item.activity}</td>
+            </tr>
+        `).join('');
+
+        // 報名資訊
+        document.getElementById('notes-intro').textContent = EVENT.notes.intro;
+        document.getElementById('notes-list').innerHTML = EVENT.notes.items.map(item =>
+            `<li><strong>${item.label}：</strong>${item.text}</li>`
+        ).join('');
+        document.getElementById('notes-closing').textContent = EVENT.notes.closing;
+
+        // 用餐資訊
+        document.getElementById('meals-intro').textContent = EVENT.meals.intro;
+        const mealsList = document.getElementById('meals-list');
+        mealsList.innerHTML = EVENT.meals.restaurants.map((r, i) => {
+            const isFirst = i === 0;
+            const titleMargin = isFirst ? 'mb-3' : 'mb-3 mt-6';
+            const imgs = r.images.length > 0 ? `
+                <div class="flex flex-wrap justify-center gap-4 mt-3">
+                    ${r.images.map(img => `
+                        <div class="mt-3 flex justify-center">
+                            <img src="${img.src}" alt="${img.alt}"
+                                 class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105 cursor-pointer">
+                        </div>
+                    `).join('')}
+                </div>` : '';
+            return `
+                <h3 class="text-3xl font-bold text-center text-indigo-700 ${titleMargin} border-b-2 border-indigo-200 pb-3">${r.name}</h3>
+                ${imgs}
+            `;
+        }).join('');
+        document.getElementById('meals-reminder').textContent = EVENT.meals.reminder;
+
+        // 環境照片
+        const photosGrid = document.getElementById('photos-grid');
+        photosGrid.innerHTML = EVENT.photos.map(photo => `
+            <div class="relative group rounded-lg overflow-hidden shadow-md">
+                <img src="${photo.src}" alt="${photo.alt}"
+                     class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105 cursor-pointer">
+            </div>
+        `).join('');
+
+        // 頁腳
+        document.getElementById('footer-text').textContent = EVENT.footer;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        render();
+
+        // 圖片放大視窗
+        const imageModal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        const modalCaption = document.getElementById('modalCaption');
+        const closeModal = document.getElementById('closeModal');
+
+        document.addEventListener('click', function(e) {
+            if (e.target.tagName === 'IMG' && (e.target.closest('#photos') || e.target.closest('#meals'))) {
+                modalImage.src = e.target.src;
+                modalImage.alt = e.target.alt;
+                modalCaption.textContent = e.target.alt;
+                imageModal.classList.remove('hidden');
+            }
         });
+
+        closeModal.addEventListener('click', () => imageModal.classList.add('hidden'));
+        imageModal.addEventListener('click', e => {
+            if (e.target === imageModal) imageModal.classList.add('hidden');
+        });
+    });
     </script>
 </body>
 </html>
