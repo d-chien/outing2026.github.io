@@ -104,6 +104,7 @@
                     <div class="flex flex-wrap gap-2">
                         <button onclick="saveEvent()" class="btn-primary">儲存草稿</button>
                         <button onclick="publishEvent()" class="btn-green">🚀 發布到首頁</button>
+                        <button onclick="duplicateEvent()" class="btn-ghost">複製活動</button>
                         <button onclick="deleteEvent()" class="btn-danger">刪除</button>
                     </div>
                 </div>
@@ -176,6 +177,7 @@
                 <div class="bg-white rounded-xl shadow-sm p-4 flex flex-wrap justify-end gap-2">
                     <button onclick="saveEvent()" class="btn-primary">儲存草稿</button>
                     <button onclick="publishEvent()" class="btn-green">🚀 發布到首頁</button>
+                    <button onclick="duplicateEvent()" class="btn-ghost">複製活動</button>
                 </div>
 
             </div>
@@ -391,7 +393,8 @@ async function saveEvent() {
         const existing = await getFile(`data/events/${currentEventId}.json`).catch(() => ({ sha: undefined }));
         await putFile(`data/events/${currentEventId}.json`, data, existing.sha,
             `chore: 更新活動資料 ${currentEventId}`);
-        showToast('✅ 草稿已儲存（首頁尚未更新）');
+        await loadEventsList();   // 重新整理側邊欄（新建後才會出現）
+        showToast('✅ 草稿已儲存！（首頁尚未更新，請點發布）');
     } catch (e) { alert('儲存失敗：' + e.message); }
 }
 
@@ -428,16 +431,42 @@ async function deleteEvent() {
         return;
     }
     if (!confirm(`確定要刪除「${currentEventId}」？此操作無法復原。`)) return;
+    const deletedId = currentEventId;
     try {
-        const { sha } = await getFile(`data/events/${currentEventId}.json`);
-        await deleteFile(`data/events/${currentEventId}.json`, sha,
-            `chore: 刪除活動 ${currentEventId}`);
+        const { sha } = await getFile(`data/events/${deletedId}.json`);
+        await deleteFile(`data/events/${deletedId}.json`, sha,
+            `chore: 刪除活動 ${deletedId}`);
         currentEventId = null;
         document.getElementById('editor').classList.add('hidden');
         document.getElementById('empty-state').classList.remove('hidden');
-        await loadEventsList();
-        showToast('已刪除');
+        await loadEventsList();   // 側邊欄移除已刪除的項目
+        showToast(`🗑️ 已刪除「${deletedId}」`);
     } catch (e) { alert('刪除失敗：' + e.message); }
+}
+
+async function duplicateEvent() {
+    if (!currentEventId) return;
+    const newId = prompt(`請輸入複製後的新活動識別碼：`, `${currentEventId}-複製`);
+    if (!newId || !newId.trim()) return;
+    const trimmedId = newId.trim();
+    showToast('複製中…');
+    try {
+        const data = collectFormData();   // 取目前表單內容（含未儲存的修改）
+        data._eventId = trimmedId;
+
+        let sha;
+        try {
+            const existing = await getFile(`data/events/${trimmedId}.json`);
+            sha = existing.sha;
+            if (!confirm(`「${trimmedId}」已存在，要覆蓋嗎？`)) return;
+        } catch (_) { /* 正常新建 */ }
+
+        await putFile(`data/events/${trimmedId}.json`, data, sha,
+            `feat: 複製活動 ${currentEventId} → ${trimmedId}`);
+        await loadEventsList();
+        await loadEvent(trimmedId);
+        showToast(`✅ 已複製為「${trimmedId}」`);
+    } catch (e) { alert('複製失敗：' + e.message); }
 }
 
 async function createNewEvent() {
