@@ -274,6 +274,7 @@ const API = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents`;
 async function ghFetch(path, method = 'GET', body = null) {
     const opts = {
         method,
+        cache: 'no-store',   // 不使用瀏覽器快取，確保目錄列表即時反映最新狀態
         headers: {
             'Authorization': `Bearer ${pat}`,
             'Accept': 'application/vnd.github+json',
