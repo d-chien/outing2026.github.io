@@ -289,16 +289,22 @@ async function ghFetch(path, method = 'GET', body = null) {
 
 async function getFile(path) {
     const data = await ghFetch(path);
-    return {
-        content: JSON.parse(atob(data.content.replace(/\n/g, ''))),
-        sha: data.sha
-    };
+    // GitHub API 回傳的 content 是 base64(UTF-8 bytes)，需用 TextDecoder 正確解碼中文
+    const raw = atob(data.content.replace(/\n/g, ''));
+    const bytes = Uint8Array.from(raw, c => c.charCodeAt(0));
+    const text = new TextDecoder('utf-8').decode(bytes);
+    return { content: JSON.parse(text), sha: data.sha };
 }
 
 async function putFile(path, content, sha, message) {
+    // 用 TextEncoder 確保中文字正確編碼為 UTF-8 再轉 base64
+    const str = JSON.stringify(content, null, 2);
+    const bytes = new TextEncoder().encode(str);
+    let binary = '';
+    bytes.forEach(b => binary += String.fromCharCode(b));
     const body = {
         message,
-        content: btoa(unescape(encodeURIComponent(JSON.stringify(content, null, 2)))),
+        content: btoa(binary),
         branch: REPO_BRANCH
     };
     if (sha) body.sha = sha;
@@ -442,16 +448,17 @@ async function createNewEvent() {
     try {
         const data = JSON.parse(JSON.stringify(DEFAULT_EVENT));
         data._eventId = trimmedId;
-        // 不帶 sha → 建立新檔（若已存在會失敗，需確認覆蓋）
+
+        // 先嘗試取得現有檔案的 sha（不存在則 sha = undefined）
+        let sha;
         try {
-            await putFile(`data/events/${trimmedId}.json`, data, undefined,
-                `feat: 新建活動 ${trimmedId}`);
-        } catch (e) {
-            if (!e.message.includes('already exists') && !confirm(`「${trimmedId}」已存在，要覆蓋嗎？`)) return;
             const existing = await getFile(`data/events/${trimmedId}.json`);
-            await putFile(`data/events/${trimmedId}.json`, data, existing.sha,
-                `feat: 新建活動 ${trimmedId}`);
-        }
+            sha = existing.sha;
+            if (!confirm(`「${trimmedId}」已存在，要覆蓋嗎？`)) return;
+        } catch (_) { /* 檔案不存在，正常新建 */ }
+
+        await putFile(`data/events/${trimmedId}.json`, data, sha,
+            `feat: 新建活動 ${trimmedId}`);
         await loadEventsList();
         loadEvent(trimmedId);
     } catch (e) { alert('建立失敗：' + e.message); }
